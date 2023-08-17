@@ -1,0 +1,9 @@
+// app global css in SCSS form
+@font-face {
+  font-family: 'monocraft';
+  src:url('./fonts/Monocraft-no-ligatures.woff')  format('woff');
+}
+
+body {
+  font-family: 'monocraft', "Microsoft YaHei", Roboto, serif;
+}

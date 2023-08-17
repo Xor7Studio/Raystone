@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cn.xor7"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("io.javalin:javalin:5.6.1")
 }
 
 tasks.test {
