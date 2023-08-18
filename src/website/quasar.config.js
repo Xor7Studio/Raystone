@@ -58,6 +58,7 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16'
       },
 
+      distDir: '../main/resources/public',
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       extendWebpack (cfg) {
         cfg.module.rules.push({
