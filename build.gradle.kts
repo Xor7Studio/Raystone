@@ -41,5 +41,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("cn.xor7.raystone.MainKt")
 }
