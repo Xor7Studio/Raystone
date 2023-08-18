@@ -33,7 +33,6 @@ tasks.test {
 
 tasks.withType<ShadowJar> {
     archiveFileName.set("Raystone-${project.property("raystone_version")}.jar")
-    minimize()
 }
 
 kotlin {
