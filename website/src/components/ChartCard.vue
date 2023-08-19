@@ -5,7 +5,7 @@
         Line Chart
       </q-card-section>
       <q-card-section>
-        <ECharts ref="barchart"
+        <ECharts ref="chart"
                  :option="options"
                  class="q-mt-md"
                  :resizable="true"
@@ -17,24 +17,29 @@
 </template>
 
 <script>
+import axios from 'axios'
+import Env from 'src/env';
 import ECharts from 'vue-echarts'
-import {useQuasar} from 'quasar';
+import * as echarts from 'echarts' // DONT DELETE IT !!!
 
-async function updateData() {
-
-}
 export default {
-  name: 'ChartCard',
+  name: "LineChart",
   components: {
     ECharts
   },
   data() {
-    const $q = useQuasar()
-    const xAxisData = []
-    const yAxisData = []
+    const xAxisData = new Array(600).fill("未记录")
+    const yAxisData = new Array(600).fill(0)
+
+    const interval = setInterval(async () => {
+      const response = await axios.get(`${Env.API_URI}/system/info`)
+      console.log(response)
+      const randomData = Math.random();
+      this.updateData(randomData);
+    }, 1000);
 
     return {
-      $q,
+      interval,
       xAxisData,
       yAxisData,
       model: false,
@@ -50,7 +55,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: [],
+          data: xAxisData,
           boundaryGap: false,
           axisTick: false,
           axisLine: false,
@@ -69,7 +74,7 @@ export default {
         series: [
           {
             symbol: 'none',
-            data: [],
+            data: yAxisData,
             type: 'line',
             smooth: true,
           },
@@ -77,6 +82,18 @@ export default {
       },
       line_chart: null
     }
+  },
+  methods: {
+    updateData(data) {
+      const date = new Date();
+      this.xAxisData.push(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
+      this.xAxisData.shift();
+      this.yAxisData.push(data);
+      this.yAxisData.shift();
+    }
+  },
+  beforeUnmount() {
+    clearInterval(this.interval);
   }
 }
 </script>

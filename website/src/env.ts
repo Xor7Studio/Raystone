@@ -1,3 +1,5 @@
-export default {
-  API_URI: 'localhost:8080/api',
+const Env = {
+   API_URI: 'http://localhost:8080/api'
 };
+
+export default Env
