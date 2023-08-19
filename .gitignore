@@ -41,5 +41,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-/src/main/resources/public/
 /run/
+/raystone-main/src/main/resources/public/*
+/raystone-main/src/main/resources/public/*.*
