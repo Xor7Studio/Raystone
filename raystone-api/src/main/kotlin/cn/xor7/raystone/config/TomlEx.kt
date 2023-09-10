@@ -1,4 +1,4 @@
-package cn.xor7.raystone.utils
+package cn.xor7.raystone.config
 
 import com.moandjiezana.toml.Toml
 import com.moandjiezana.toml.TomlWriter
@@ -8,7 +8,8 @@ import java.io.IOException
 class TomlEx<T>(filePath: String, private val clazz: Class<T>) : Toml() {
     private val file: File
     private val tomlWriter: TomlWriter = TomlWriter()
-    var data: T? = null
+    private var data: T? = null
+        get() = field
 
     init {
         file = File(filePath)
@@ -16,7 +17,7 @@ class TomlEx<T>(filePath: String, private val clazz: Class<T>) : Toml() {
             try {
                 file.getParentFile().mkdirs()
                 if (!file.createNewFile()) {
-                    throw Error("Can not create file: $filePath")
+                    throw Error("Can not create config file: $filePath")
                 }
             } catch (e: IOException) {
                 throw RuntimeException(e)

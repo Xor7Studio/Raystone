@@ -7,7 +7,10 @@ import oshi.util.GlobalConfig
 
 val logger: Log = LogFactory.get()
 fun main() {
+    // set OSHI config
     GlobalConfig.set(GlobalConfig.OSHI_OS_WINDOWS_CPU_UTILITY, true)
     GlobalConfig.set(GlobalConfig.OSHI_OS_WINDOWS_PERFOS_DIABLED, true)
+
+    // start Webserver
     Webserver()
 }
