@@ -2,6 +2,7 @@ package cn.xor7.raystone.web
 
 import cn.hutool.log.Log
 import cn.hutool.log.LogFactory
+import cn.xor7.raystone.web.api.API
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus

@@ -1,7 +1,7 @@
 package cn.xor7.raystone.web.api.system
 
 import cn.hutool.system.oshi.OshiUtil
-import cn.xor7.raystone.web.API
+import cn.xor7.raystone.web.api.API
 import com.alibaba.fastjson.annotation.JSONField
 import com.alibaba.fastjson2.JSON
 import io.javalin.http.Context
