@@ -22,6 +22,7 @@ dependencies {
     implementation("io.javalin:javalin:5.6.2")
     implementation("com.alibaba:fastjson:2.0.39")
     implementation("com.github.oshi:oshi-core:6.4.4")
+    implementation("io.netty:netty-codec:4.1.97.Final")
     implementation("org.reflections:reflections:0.10.2")
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("cn.hutool:hutool-log:${project.property("hutool_version")}")

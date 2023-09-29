@@ -1,4 +1,4 @@
-package cn.xor7.raystone.event.event
+package cn.xor7.raystone.event
 
 import cn.xor7.raystone.event.Event
 

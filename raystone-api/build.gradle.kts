@@ -21,6 +21,7 @@ dependencies {
     implementation("cn.zhxu:okhttps-gson:4.0.1")
     implementation("io.netty:netty-codec:4.1.97.Final")
     implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
 }
 
 kotlin {
