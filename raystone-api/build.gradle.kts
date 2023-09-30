@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id("java")
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
@@ -15,13 +16,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.KenRouKoro:ctoml4j:1.0.0")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(kotlin("reflect"))
+    implementation(kotlin("stdlib-jdk8"))
     implementation("cn.zhxu:okhttps:4.0.1")
     implementation("cn.zhxu:okhttps-gson:4.0.1")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("net.peanuuutz.tomlkt:tomlkt:0.3.3")
     implementation("io.netty:netty-codec:4.1.97.Final")
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
 }
 
 kotlin {

@@ -1,14 +1,14 @@
 package cn.xor7.raystone.channel
 
+import cn.xor7.raystone.Raystone
+import cn.xor7.raystone.event.ChannelClientInitEvent
 import io.netty.bootstrap.Bootstrap
-import io.netty.channel.Channel
-import io.netty.channel.ChannelInitializer
-import io.netty.channel.ChannelOption
-import io.netty.channel.EventLoopGroup
+import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder
+import io.netty.util.concurrent.GenericFutureListener
 
 
 object EventChannelClient {
@@ -25,9 +25,8 @@ object EventChannelClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     override fun initChannel(ch: SocketChannel) {
-                        ch.pipeline().addLast(LengthFieldBasedFrameDecoder(Int.MAX_VALUE,1,4))
+                        ch.pipeline().addLast(LengthFieldBasedFrameDecoder(Int.MAX_VALUE, 1, 4))
                         ch.pipeline().addLast(EventChannelHandler)
-
                     }
                 })
         } finally {
@@ -35,11 +34,18 @@ object EventChannelClient {
         }
     }
 
-    fun connect() {
-        connect("localhost", 815)
+    fun channel(): Channel {
+        return channel
     }
 
     fun connect(host: String, port: Int) {
-        channel = bootstrap.connect(host, port).sync().channel()
+        bootstrap.connect(host, port).addListener(GenericFutureListener { future: ChannelFuture ->
+            if (future.isSuccess) {
+                channel = future.channel()
+                Raystone.emitEvent(ChannelClientInitEvent(""))
+            } else {
+                // TODO
+            }
+        })
     }
 }
