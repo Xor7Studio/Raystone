@@ -13,7 +13,7 @@
 
     <!-- 配置文件输出 -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>myapp.log</file>
+        <file>.raystone/full.log</file>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>

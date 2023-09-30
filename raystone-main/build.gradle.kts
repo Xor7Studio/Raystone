@@ -4,6 +4,7 @@ plugins {
     application
     id("java")
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
@@ -16,12 +17,13 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
+    implementation(kotlin("stdlib-jdk8"))
     implementation(project(":raystone-api"))
     implementation("io.javalin:javalin:5.6.2")
     implementation("com.alibaba:fastjson:2.0.39")
     implementation("com.github.oshi:oshi-core:6.4.4")
+    implementation("net.peanuuutz.tomlkt:tomlkt:0.3.3")
     implementation("io.netty:netty-codec:4.1.97.Final")
     implementation("org.reflections:reflections:0.10.2")
     implementation("ch.qos.logback:logback-classic:1.4.11")
