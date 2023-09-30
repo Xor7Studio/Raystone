@@ -21,17 +21,21 @@ object Raystone {
     private var initialized = false
     private val listeners = mutableMapOf<String, Listener>()
     private val eventHandlers = mutableMapOf<String, Map<Level, MutableSet<KFunction<*>>>>()
-    private lateinit var apiConfig: APIConfig
     val GSON = GsonBuilder()
         .setNumberToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
         .create()!!
     val TOML = Toml {
         ignoreUnknownKeys = true
     }
+    lateinit var environment: Environment
+        private set
+    lateinit var apiConfig: APIConfig
+        private set
 
     const val API_CONFIG_FILE_PATH = ".raystone/api.toml"
 
     fun init(environment: Environment = Environment.CLIENT) {
+        this.environment = environment
         if (initialized) {
             return
         }
@@ -44,7 +48,7 @@ object Raystone {
         overwriteApiConfig()
 
         if (environment == Environment.CLIENT) {
-            EventChannelClient.connect("localhost", 815)
+            EventChannelClient.connect(apiConfig.serverHost, apiConfig.serverPort)
         }
     }
 
@@ -109,11 +113,11 @@ object Raystone {
 
     fun emitEvent(event: Any) {
         val data = "${event.javaClass.name}@${GSON.toJson(event)}"
-        val byteBuf: ByteBuf = EventChannelClient.channel().alloc().buffer()
+        val byteBuf: ByteBuf = EventChannelClient.channel.alloc().buffer()
         byteBuf.writeByte(8)
         byteBuf.writeInt(data.length)
         byteBuf.writeBytes(data.toByteArray(Charsets.UTF_8))
-        EventChannelClient.channel().writeAndFlush(byteBuf)
+        EventChannelClient.channel.writeAndFlush(byteBuf)
     }
 
     enum class Environment {

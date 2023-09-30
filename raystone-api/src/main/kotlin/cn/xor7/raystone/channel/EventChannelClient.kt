@@ -14,7 +14,9 @@ import io.netty.util.concurrent.GenericFutureListener
 object EventChannelClient {
     private val eventLoopGroup: EventLoopGroup = NioEventLoopGroup()
     private val bootstrap: Bootstrap = Bootstrap()
-    private lateinit var channel: Channel
+    private var retryAttempts = 0
+    lateinit var channel: Channel
+        private set
 
     init {
         try {
@@ -34,15 +36,11 @@ object EventChannelClient {
         }
     }
 
-    fun channel(): Channel {
-        return channel
-    }
-
     fun connect(host: String, port: Int) {
         bootstrap.connect(host, port).addListener(GenericFutureListener { future: ChannelFuture ->
             if (future.isSuccess) {
                 channel = future.channel()
-                Raystone.emitEvent(ChannelClientInitEvent(""))
+                Raystone.emitEvent(ChannelClientInitEvent(Raystone.apiConfig.uuid))
             } else {
                 // TODO
             }

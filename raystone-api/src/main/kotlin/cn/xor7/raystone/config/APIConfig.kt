@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class APIConfig(
     var uuid: String = "",
     var serverHost: String = "localhost",
-    var serverPort: Int = 815
+    var serverPort: Int = 815,
+    var maxRetryAttempts: Int = 5
 )
