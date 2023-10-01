@@ -22,7 +22,7 @@ dependencies {
     implementation(project(":raystone-api"))
     implementation("io.javalin:javalin:5.6.2")
     implementation("com.alibaba:fastjson:2.0.39")
-    implementation("com.github.oshi:oshi-core:6.4.4")
+    implementation("com.github.oshi:oshi-core:6.4.6")
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.3")
     implementation("io.netty:netty-codec:4.1.87.Final")
     implementation("org.reflections:reflections:0.10.2")
