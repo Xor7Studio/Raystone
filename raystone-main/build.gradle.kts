@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
-group = "cn.xor7.raystone"
+group = "cn.xor7.code.raystone"
 version = project.property("raystone_version")!!
 
 repositories {

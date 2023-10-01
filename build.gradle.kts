@@ -5,7 +5,7 @@ plugins {
 }
 
 
-group = "cn.xor7"
+group = "cn.xor7.code.raystone"
 version = "1.0.0-SNAPSHOT"
 
 repositories {

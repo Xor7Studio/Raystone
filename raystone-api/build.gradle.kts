@@ -1,13 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
+    `maven-publish`
     id("java")
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
-group = "cn.xor7.raystone"
+group = "cn.xor7.code.raystone"
 version = project.property("raystone_version")!!
 
 repositories {
@@ -32,4 +33,19 @@ kotlin {
 tasks.withType<ShadowJar> {
     minimize()
     archiveFileName.set("../../../build/Raystone-API-${project.property("raystone_version")}.jar")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            groupId = group as String?
+            artifactId = "raystone-api"
+            version = version
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
