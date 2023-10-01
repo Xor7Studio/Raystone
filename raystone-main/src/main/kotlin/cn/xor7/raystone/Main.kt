@@ -1,11 +1,8 @@
 package cn.xor7.raystone
 
-import cn.hutool.log.Log
-import cn.hutool.log.LogFactory
 import cn.xor7.raystone.web.Webserver
 import oshi.util.GlobalConfig
 
-val logger: Log = LogFactory.get()
 fun main() {
     // setup Raystone API
     Raystone.init(Raystone.Environment.SERVER)
