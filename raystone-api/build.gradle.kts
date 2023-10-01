@@ -23,7 +23,7 @@ dependencies {
     implementation("cn.zhxu:okhttps-gson:4.0.1")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.3")
-    implementation("io.netty:netty-codec:4.1.97.Final")
+    implementation("io.netty:netty-codec:4.1.87.Final")
 }
 
 kotlin {
