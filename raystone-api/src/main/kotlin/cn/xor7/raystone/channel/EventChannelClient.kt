@@ -1,7 +1,7 @@
 package cn.xor7.raystone.channel
 
 import cn.xor7.raystone.Raystone
-import cn.xor7.raystone.event.lifecycle.ChannelClientInitEvent
+import cn.xor7.raystone.event.lifecycle.ChannelInitializeEvent
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
@@ -41,7 +41,7 @@ object EventChannelClient {
             bootstrap.connect(host, port).addListener(GenericFutureListener { future: ChannelFuture ->
                 if (future.isSuccess) {
                     channel = future.channel()
-                    Raystone.emitEvent(ChannelClientInitEvent(Raystone.apiConfig.uuid))
+                    Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid))
                 } else {
                     retryAttempts++
                     if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {

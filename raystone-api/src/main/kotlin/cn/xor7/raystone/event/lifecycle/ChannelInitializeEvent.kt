@@ -1,5 +1,5 @@
 package cn.xor7.raystone.event.lifecycle
 
-data class ChannelClientInitEvent(
+data class ChannelInitializeEvent(
     var clientUuid: String
 )
