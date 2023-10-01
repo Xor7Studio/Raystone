@@ -1,7 +1,7 @@
 package cn.xor7.raystone.channel
 
 import cn.xor7.raystone.Raystone
-import cn.xor7.raystone.event.ChannelClientInitEvent
+import cn.xor7.raystone.event.lifecycle.ChannelClientInitEvent
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
