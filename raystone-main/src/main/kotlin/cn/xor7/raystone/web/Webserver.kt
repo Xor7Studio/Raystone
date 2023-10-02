@@ -9,7 +9,7 @@ import io.javalin.http.HttpStatus
 import org.reflections.Reflections
 import java.util.*
 
-class Webserver {
+object Webserver {
     private val logger: Log = LogFactory.get()
     private val app: Javalin = Javalin.create { config -> // 设置SPA
         config.staticFiles.add { staticFiles ->
@@ -42,7 +42,10 @@ class Webserver {
                     cls.getAnnotation(API::class.java).path
             handlers[path] = cls.getConstructor().newInstance()
         }
-        app.start(8080)
+    }
+
+    fun start(host: String, port: Int) {
+        app.start(host, port)
     }
 
     private fun handle(ctx: Context, path: String, method: String) {
