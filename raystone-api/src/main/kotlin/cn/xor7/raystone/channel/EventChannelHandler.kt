@@ -19,6 +19,6 @@ object EventChannelHandler : SimpleChannelInboundHandler<ByteBuf>() {
         if (data.size != 2) {
             return
         }
-        Raystone.onReceiveEvent(Raystone.GSON.fromJson(data[1], Class.forName(data[0])))
+        Raystone.emitEvent(Raystone.GSON.fromJson(data[1], Class.forName(data[0])), Raystone.Channel.LOCAL)
     }
 }
