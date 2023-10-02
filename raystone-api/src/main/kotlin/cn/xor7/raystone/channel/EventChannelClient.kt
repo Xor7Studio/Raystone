@@ -8,7 +8,6 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder
-import io.netty.util.concurrent.GenericFutureListener
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
@@ -38,23 +37,25 @@ object EventChannelClient {
                         ch.pipeline().addLast(EventChannelHandler)
                     }
                 })
-            bootstrap.connect(host, port).addListener(GenericFutureListener { future: ChannelFuture ->
-                if (future.isSuccess) {
-                    channel = future.channel()
-                    Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid))
+            val channelFuture: ChannelFuture = bootstrap.connect(host, port).sync()
+
+            if (channelFuture.isSuccess) {
+                channel = channelFuture.channel()
+                Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid))
+            } else {
+                retryAttempts++
+                if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {
+                    val delaySeconds = 2.0.pow(retryAttempts.toDouble()).toLong()
+                    println("Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
+                    connect(host, port, delaySeconds)
                 } else {
-                    retryAttempts++
-                    if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {
-                        val delaySeconds = 2.0.pow(retryAttempts.toDouble()).toLong()
-                        println("Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
-                        connect(host, port, delaySeconds)
-                    } else {
-                        println("Max retry attempts reached. Connection failed.")
-                    }
+                    println("Max retry attempts reached. Connection failed.")
                 }
-            })
+            }
+            channelFuture.channel().closeFuture().sync()
         } finally {
             eventLoopGroup.shutdownGracefully()
         }
+
     }
 }
