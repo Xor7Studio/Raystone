@@ -41,7 +41,7 @@ object EventChannelClient {
 
             if (channelFuture.isSuccess) {
                 channel = channelFuture.channel()
-                Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid))
+                Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid), Raystone.Channel.REMOTE)
             } else {
                 retryAttempts++
                 if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {

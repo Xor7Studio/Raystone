@@ -1,5 +1,6 @@
 package cn.xor7.raystone
 
+import cn.xor7.raystone.Raystone.Channel.*
 import cn.xor7.raystone.channel.EventChannelClient
 import cn.xor7.raystone.config.APIConfig
 import cn.xor7.raystone.event.Level
@@ -95,23 +96,18 @@ object Raystone {
         }
     }
 
-    fun onReceiveEvent(event: Any) {
-        val handlers = eventHandlers[event.javaClass.name] ?: return
-        onReceiveEvent0(handlers, Level.LOWEST, event)
-        onReceiveEvent0(handlers, Level.LOW, event)
-        onReceiveEvent0(handlers, Level.MEDIUM, event)
-        onReceiveEvent0(handlers, Level.HIGH, event)
-        onReceiveEvent0(handlers, Level.HIGHEST, event)
-    }
-
-    private fun onReceiveEvent0(allHandlers: Map<Level, MutableSet<KFunction<*>>>, level: Level, event: Any) {
-        val handlers = allHandlers[level] ?: return
-        for (handler in handlers) {
-            handler.call(listeners[handler.parameters[0].type.jvmErasure.qualifiedName], event)
+    fun emitEvent(event: Any, channel: Channel = BOTH) {
+        when (channel) {
+            LOCAL -> emitEventLocal(event)
+            REMOTE -> emitEventRemote(event)
+            BOTH -> {
+                emitEventLocal(event)
+                emitEventRemote(event)
+            }
         }
     }
 
-    fun emitEvent(event: Any) {
+    private fun emitEventRemote(event: Any) {
         val data = "${event.javaClass.name}@${GSON.toJson(event)}"
         val byteBuf: ByteBuf = EventChannelClient.channel.alloc().buffer()
         byteBuf.writeByte(8)
@@ -120,8 +116,30 @@ object Raystone {
         EventChannelClient.channel.writeAndFlush(byteBuf)
     }
 
+    private fun emitEventLocal(event: Any) {
+        val handlers = eventHandlers[event.javaClass.name] ?: return
+        emitEventLocal(handlers, Level.LOWEST, event)
+        emitEventLocal(handlers, Level.LOW, event)
+        emitEventLocal(handlers, Level.MEDIUM, event)
+        emitEventLocal(handlers, Level.HIGH, event)
+        emitEventLocal(handlers, Level.HIGHEST, event)
+    }
+
+    private fun emitEventLocal(allHandlers: Map<Level, MutableSet<KFunction<*>>>, level: Level, event: Any) {
+        val handlers = allHandlers[level] ?: return
+        for (handler in handlers) {
+            handler.call(listeners[handler.parameters[0].type.jvmErasure.qualifiedName], event)
+        }
+    }
+
     enum class Environment {
         CLIENT,
         SERVER
+    }
+
+    enum class Channel {
+        LOCAL,
+        REMOTE,
+        BOTH
     }
 }
