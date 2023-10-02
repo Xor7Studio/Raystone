@@ -1,6 +1,7 @@
 package cn.xor7.raystone.channel
 
 import cn.xor7.raystone.Raystone
+import cn.xor7.raystone.Raystone.LOG_PREFIX
 import cn.xor7.raystone.event.lifecycle.ChannelInitializeEvent
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.*
@@ -45,15 +46,15 @@ object EventChannelClient {
                 if (future.isSuccess) {
                     channel = channelFuture.channel()
                     Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid), Raystone.Channel.REMOTE)
-                    println("Connection successful")
+                    println("$LOG_PREFIX Connection successful")
                 } else {
                     retryAttempts++
                     if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {
                         val delaySeconds = 2.0.pow(retryAttempts.toDouble()).toLong()
-                        println("Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
+                        println("$LOG_PREFIX Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
                         connect(host, port, delaySeconds)
                     } else {
-                        println("Max retry attempts reached. Connection failed.")
+                        println("$LOG_PREFIX Max retry attempts reached. Connection failed.")
                     }
                 }
             }.sync()

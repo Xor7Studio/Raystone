@@ -22,6 +22,7 @@ object Raystone {
     private var initialized = false
     private val listeners = mutableMapOf<String, Listener>()
     private val eventHandlers = mutableMapOf<String, Map<Level, MutableSet<KFunction<*>>>>()
+    const val LOG_PREFIX = "[Raystone API]"
     val GSON = GsonBuilder()
         .setNumberToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
         .create()!!
@@ -49,7 +50,7 @@ object Raystone {
         overwriteApiConfig()
 
         if (environment == Environment.CLIENT) {
-            println("[Raystone API] Init EventChannelClient.")
+            println("$LOG_PREFIX EventChannelClient.")
             EventChannelClient.connect(apiConfig.serverHost, apiConfig.serverPort)
         }
     }
