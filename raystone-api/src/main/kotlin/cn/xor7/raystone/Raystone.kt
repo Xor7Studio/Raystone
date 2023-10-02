@@ -49,6 +49,7 @@ object Raystone {
         overwriteApiConfig()
 
         if (environment == Environment.CLIENT) {
+            println("[Raystone API] Init EventChannelClient.")
             EventChannelClient.connect(apiConfig.serverHost, apiConfig.serverPort)
         }
     }

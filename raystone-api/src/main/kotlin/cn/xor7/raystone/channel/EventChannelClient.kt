@@ -31,28 +31,32 @@ object EventChannelClient {
                 .channel(NioSocketChannel::class.java)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     override fun initChannel(ch: SocketChannel) {
                         ch.pipeline().addLast(LengthFieldBasedFrameDecoder(Int.MAX_VALUE, 1, 4))
                         ch.pipeline().addLast(EventChannelHandler)
                     }
                 })
-            val channelFuture: ChannelFuture = bootstrap.connect(host, port).sync()
 
-            if (channelFuture.isSuccess) {
-                channel = channelFuture.channel()
-                Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid), Raystone.Channel.REMOTE)
-            } else {
-                retryAttempts++
-                if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {
-                    val delaySeconds = 2.0.pow(retryAttempts.toDouble()).toLong()
-                    println("Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
-                    connect(host, port, delaySeconds)
+            val channelFuture: ChannelFuture = bootstrap.connect(host, port)
+
+            channelFuture.addListener { future ->
+                if (future.isSuccess) {
+                    channel = channelFuture.channel()
+                    Raystone.emitEvent(ChannelInitializeEvent(Raystone.apiConfig.uuid), Raystone.Channel.REMOTE)
+                    println("Connection successful")
                 } else {
-                    println("Max retry attempts reached. Connection failed.")
+                    retryAttempts++
+                    if (retryAttempts <= Raystone.apiConfig.maxRetryAttempts) {
+                        val delaySeconds = 2.0.pow(retryAttempts.toDouble()).toLong()
+                        println("Connection attempt $retryAttempts failed. Retrying in $delaySeconds seconds...")
+                        connect(host, port, delaySeconds)
+                    } else {
+                        println("Max retry attempts reached. Connection failed.")
+                    }
                 }
-            }
-            channelFuture.channel().closeFuture().sync()
+            }.sync()
         } finally {
             eventLoopGroup.shutdownGracefully()
         }
