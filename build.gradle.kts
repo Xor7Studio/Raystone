@@ -6,7 +6,7 @@ plugins {
 
 
 group = "cn.xor7.code.raystone"
-version = "1.0.0-SNAPSHOT"
+version = project.property("raystone_version")!!
 
 repositories {
     mavenCentral()

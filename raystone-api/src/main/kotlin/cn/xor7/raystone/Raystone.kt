@@ -3,6 +3,7 @@ package cn.xor7.raystone
 import cn.xor7.raystone.Raystone.Channel.*
 import cn.xor7.raystone.channel.EventChannelClient
 import cn.xor7.raystone.config.APIConfig
+import cn.xor7.raystone.event.Filter
 import cn.xor7.raystone.event.Level
 import cn.xor7.raystone.event.Listener
 import cn.xor7.raystone.event.Subscribe
@@ -21,6 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 object Raystone {
     private var initialized = false
     private val listeners = mutableMapOf<String, Listener>()
+    private val filters = mutableMapOf<Listener, MutableSet<Filter>>();
     private val eventHandlers = mutableMapOf<String, Map<Level, MutableSet<KFunction<*>>>>()
     const val LOG_PREFIX = "[Raystone API]"
     val GSON = GsonBuilder()
@@ -71,7 +73,12 @@ object Raystone {
         return result
     }
 
-    fun registerListener(listener: Listener) {
+    fun registerListener(listener: Listener, parent: Listener) {
+        val parentFilters = filters[parent] ?: emptySet()
+        for(parentFilter in parentFilters) {
+            applyFilter(parentFilter, listener)
+        }
+
         listeners[listener.javaClass.name] = listener
         val functions = listener::class.declaredMemberFunctions
         for (function in functions) {
@@ -95,6 +102,14 @@ object Raystone {
                     eventHandlers[eventName]?.get(annotation.level)?.add(function)
                 }
             }
+        }
+    }
+
+    fun applyFilter(filter: Filter, listener: Listener) {
+        if (!filters.containsKey(listener)) {
+            filters[listener] = mutableSetOf(filter)
+        } else {
+            filters[listener]!!.add(filter)
         }
     }
 
@@ -130,7 +145,14 @@ object Raystone {
     private fun emitEventLocal(allHandlers: Map<Level, MutableSet<KFunction<*>>>, level: Level, event: Any) {
         val handlers = allHandlers[level] ?: return
         for (handler in handlers) {
-            handler.call(listeners[handler.parameters[0].type.jvmErasure.qualifiedName], event)
+            val listener = listeners[handler.parameters[0].type.jvmErasure.qualifiedName]
+            val listenerFilters = filters[listener] ?: emptySet()
+            for(listenerFilter in listenerFilters) {
+                if(!listenerFilter.pass(event)) {
+                    return
+                }
+            }
+            handler.call(listener, event)
         }
     }
 
