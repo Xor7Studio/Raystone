@@ -17,12 +17,13 @@ import java.util.*
 import kotlin.io.path.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.jvmErasure
 
 object Raystone {
     private var initialized = false
     private val listeners = mutableMapOf<String, Listener>()
-    private val filters = mutableMapOf<Listener, MutableSet<Filter>>();
+    private val filters = mutableMapOf<Listener, MutableSet<Filter>>()
     private val eventHandlers = mutableMapOf<String, Map<Level, MutableSet<KFunction<*>>>>()
     const val LOG_PREFIX = "[Raystone API]"
     val GSON = GsonBuilder()
@@ -75,7 +76,7 @@ object Raystone {
 
     fun registerListener(listener: Listener, parent: Listener) {
         val parentFilters = filters[parent] ?: emptySet()
-        for(parentFilter in parentFilters) {
+        for (parentFilter in parentFilters) {
             applyFilter(parentFilter, listener)
         }
 
@@ -134,25 +135,29 @@ object Raystone {
     }
 
     private fun emitEventLocal(event: Any) {
-        val handlers = eventHandlers[event.javaClass.name] ?: return
-        emitEventLocal(handlers, Level.LOWEST, event)
-        emitEventLocal(handlers, Level.LOW, event)
-        emitEventLocal(handlers, Level.MEDIUM, event)
-        emitEventLocal(handlers, Level.HIGH, event)
-        emitEventLocal(handlers, Level.HIGHEST, event)
+        emitEventLocal0(Level.LOWEST, event)
+        emitEventLocal0(Level.LOW, event)
+        emitEventLocal0(Level.MEDIUM, event)
+        emitEventLocal0(Level.HIGH, event)
+        emitEventLocal0(Level.HIGHEST, event)
     }
 
-    private fun emitEventLocal(allHandlers: Map<Level, MutableSet<KFunction<*>>>, level: Level, event: Any) {
-        val handlers = allHandlers[level] ?: return
-        for (handler in handlers) {
-            val listener = listeners[handler.parameters[0].type.jvmErasure.qualifiedName]
-            val listenerFilters = filters[listener] ?: emptySet()
-            for(listenerFilter in listenerFilters) {
-                if(!listenerFilter.pass(event)) {
-                    return
+    private fun emitEventLocal0(level: Level, event: Any) {
+        val classes = event::class.superclasses.plus(event::class)
+
+        for (clazz in classes) {
+            val handlers = (eventHandlers[event.javaClass.name] ?: return)[level] ?: return
+
+            for (handler in handlers) {
+                val listener = listeners[handler.parameters[0].type.jvmErasure.qualifiedName]
+                val listenerFilters = filters[listener] ?: return
+                for (listenerFilter in listenerFilters) {
+                    if (!listenerFilter.pass(event)) {
+                        return
+                    }
                 }
+                handler.call(listener, event)
             }
-            handler.call(listener, event)
         }
     }
 
